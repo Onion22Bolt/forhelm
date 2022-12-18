@@ -1,0 +1,11 @@
+kubectl create namespace onion
+
+kubectl create secret docker-registry samlabs \
+> --namespace onion \
+> --docker-server="https://registry.samlabs.pw" \
+> --docker-username="student" \
+> --docker-password="student"
+
+helm template --namespace onion gitlab-runner -f runner-chart-values.yaml gitlab/gitlab-runner > runner-manifest.yaml
+
+kubectl apply -f runner-manifest.yaml
