@@ -1,0 +1,45 @@
+# Default values for .helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: productcatalogservice
+
+service:
+  type: ClusterIP
+  port: 3550
+  name: productcatalogservice
+  targetport: 3550
+
+spec:
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 5
+
+securityContext1:
+  fsGroup: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+securityContext2:
+  allowPrivilegeEscalation: false
+  privileged: false
+  readOnlyRootFilesystem: true
+
+container: 
+  name: server
+
+env:
+  name1: PORT
+  name2: DISABLE_PROFILER
+  value2: "1"
+
+requests:
+  cpu: 100m
+  memory: 64Mi
+
+limits:
+  cpu: 200m
+  memory: 128Mi
+
+

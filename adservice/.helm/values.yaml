@@ -1,0 +1,46 @@
+# Default values for .helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: adservice
+
+service:
+  type: ClusterIP
+  port: 9555
+  name: adservice
+  targetport: 9555
+
+spec:
+  serviceAccountName: default
+  terminationGracePeriodSeconds: 5
+
+securityContext1:
+  fsGroup: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+securityContext2:
+  allowPrivilegeEscalation: false
+  privileged: false
+  readOnlyRootFilesystem: true
+
+container: 
+  name: server
+
+env:
+  name: PORT
+
+requests:
+  cpu: 200m
+  memory: 180Mi
+
+limits:
+  cpu: 300m
+  memory: 300Mi
+
+probe:
+  initialDelaySeconds: 20
+  periodSeconds: 15
+

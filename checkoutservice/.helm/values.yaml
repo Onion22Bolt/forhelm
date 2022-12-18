@@ -1,0 +1,53 @@
+# Default values for .helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: checkoutservice
+
+service:
+  type: ClusterIP
+  port: 5050
+  name: checkoutservice
+  targetport: 5050
+
+spec:
+  serviceAccountName: default
+
+securityContext1:
+  fsGroup: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+securityContext2:
+  allowPrivilegeEscalation: false
+  privileged: false
+  readOnlyRootFilesystem: true
+
+container: 
+  name: server
+
+env:
+  name: PORT
+  name1: PRODUCT_CATALOG_SERVICE_ADDR
+  value1: "productcatalogservice:3550"
+  name2: SHIPPING_SERVICE_ADDR
+  value2: "shippingservice:50051"
+  name3: PAYMENT_SERVICE_ADDR
+  value3: "paymentservice:50051"
+  name4: EMAIL_SERVICE_ADDR
+  value4: "emailservice:5000"
+  name5: CURRENCY_SERVICE_ADDR
+  value5: "currencyservice:7000"
+  name6: CART_SERVICE_ADDR
+  value6: "cartservice:7070"
+
+
+requests:
+  cpu: 100m
+  memory: 64Mi
+
+limits:
+  cpu: 200m
+  memory: 128Mi

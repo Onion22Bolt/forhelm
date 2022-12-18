@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      {{- include ".helm.selectorLabels" . | nindent 6 }}
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        {{- include ".helm.selectorLabels" . | nindent 8 }}
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
+    spec:
+      serviceAccountName: {{ .Values.spec.serviceAccountName }}
+      terminationGracePeriodSeconds: {{ .Values.spec.terminationGracePeriodSeconds }}
+      restartPolicy: Always
+      securityContext:
+        {{- toYaml .Values.securityContext1 | nindent 8 }}
+      initContainers:
+      - command:
+        - /bin/sh
+        - -exc
+        - |
+          echo "Init container pinging frontend: ${FRONTEND_ADDR}..."
+          STATUSCODE=$(wget --server-response http://${FRONTEND_ADDR} 2>&1 | awk '/^  HTTP/{print $2}')
+          if test $STATUSCODE -ne 200; then
+              echo "Error: Could not reach frontend - Status code: ${STATUSCODE}"
+              exit 1
+          fi
+        name: frontend-check
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.securityContext2.allowPrivilegeEscalation }}
+          capabilities:
+            drop:
+              - all
+          privileged: {{ .Values.securityContext2.privileged }}
+          readOnlyRootFilesystem: {{ .Values.securityContext2.readOnlyRootFilesystem }}
+        image: busybox:latest
+        env:
+        - name: {{ .Values.env.name1 }}
+          value: {{ .Values.env.value1 }}
+      containers:
+      - name: {{ .Values.container.name }}
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.securityContext2.allowPrivilegeEscalation }}
+          capabilities:
+            drop:
+              - all
+          privileged: {{ .Values.securityContext2.privileged }}
+          readOnlyRootFilesystem: {{ .Values.securityContext2.readOnlyRootFilesystem }}
+        image: {{ .Values.image.repository | quote }}
+        env:
+        - name: {{ .Values.env.name1 }}
+          value: "{{ .Values.env.value1 }}"
+        - name: {{ .Values.env.name2 }}
+          value: "{{ .Values.env.value2 }}"
+        resources:
+          requests:
+            {{- toYaml .Values.requests | nindent 12 }}
+          limits:
+            {{- toYaml .Values.limits | nindent 12 }}

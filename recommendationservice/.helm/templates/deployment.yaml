@@ -1,0 +1,52 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  selector:
+    matchLabels:
+      {{- include ".helm.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include ".helm.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: {{ .Values.spec.serviceAccountName }}
+      terminationGracePeriodSeconds: {{ .Values.spec.terminationGracePeriodSeconds }}
+      securityContext:
+        {{- toYaml .Values.securityContext1 | nindent 8 }}
+      containers:
+      - name: {{ .Values.container.name }}
+        securityContext:
+          allowPrivilegeEscalation: {{ .Values.securityContext2.allowPrivilegeEscalation }}
+          capabilities:
+            drop:
+              - all
+          privileged: {{ .Values.securityContext2.privileged }}
+          readOnlyRootFilesystem: {{ .Values.securityContext2.readOnlyRootFilesystem }}
+        image: {{ .Values.image.repository | quote }}
+        ports:
+        - containerPort: {{ .Values.service.targetport }}
+        readinessProbe:
+          periodSeconds: {{ .Values.probe.periodSeconds }}
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:{{ .Values.service.targetport }}"]
+        livenessProbe:
+          periodSeconds: {{ .Values.probe.periodSeconds }}
+          exec:
+            command: ["/bin/grpc_health_probe", "-addr=:{{ .Values.service.targetport }}"]
+        env:
+        - name: {{ .Values.env.name1 }}
+          value: "{{ .Values.service.targetport }}"
+        - name: {{ .Values.env.name2 }}
+          value: "{{ .Values.env.value2 }}"
+        - name: {{ .Values.env.name3 }}
+          value: "{{ .Values.env.value3 }}"
+        resources:
+          requests:
+            {{- toYaml .Values.requests | nindent 12 }}
+          limits:
+            {{- toYaml .Values.limits | nindent 12 }}
+
+
+

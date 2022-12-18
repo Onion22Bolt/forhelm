@@ -1,0 +1,62 @@
+# Default values for .helm.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: frontend
+
+service:
+  name1: frontend
+  name2: frontend-external
+  type1: ClusterIP
+  type2: LoadBalancer
+  port: 80
+  targetport: 8080
+
+spec:
+  serviceAccountName: default
+
+securityContext1:
+  fsGroup: 1000
+  runAsGroup: 1000
+  runAsNonRoot: true
+  runAsUser: 1000
+
+container: 
+  name: server
+
+securityContext2:
+  allowPrivilegeEscalation: false
+  privileged: false
+  readOnlyRootFilesystem: true
+
+env:
+  name: PORT
+  name1: PRODUCT_CATALOG_SERVICE_ADDR
+  value1: "productcatalogservice:3550"
+  name2: CURRENCY_SERVICE_ADDR
+  value2: "currencyservice:7000"
+  name3: CART_SERVICE_ADDR
+  value3: "cartservice:7070"
+  name4: RECOMMENDATION_SERVICE_ADDR
+  value4: "recommendationservice:8080"
+  name5: SHIPPING_SERVICE_ADDR
+  value5: "shippingservice:50051"
+  name6: CHECKOUT_SERVICE_ADDR
+  value6: "checkoutservice:5050"
+  name7: AD_SERVICE_ADDR
+  value7: "adservice:9555"
+  name8: ENABLE_PROFILER
+  value8: "0"
+
+requests:
+  cpu: 100m
+  memory: 64Mi
+
+limits:
+  cpu: 200m
+  memory: 128Mi
+
+probe:
+  initialDelaySeconds: 10
+
